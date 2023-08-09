@@ -1,0 +1,9 @@
+admin
+password
+info
+help
+support
+it
+administrator
+president
+chancellor

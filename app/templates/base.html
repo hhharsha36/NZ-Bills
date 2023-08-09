@@ -1,0 +1,66 @@
+<!-- templates/base.html -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ranapto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bulma.min.css') }}" />
+    <link rel= "stylesheet" type= "text/css" href="{{ url_for('static',filename='main_page.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='RanoptoLogo.png') }}">
+</head>
+
+<body>
+    <section class="hero is-primary is-fullheight ether-class">
+{#    <img src="{{ url_for('static',filename='ether_bg.jpg') }}" alt="ether" style="background-size: cover; top: 0; border: 0; right: 0; left: 0">#}
+{#    <img src="{{ url_for('static',filename='ether_bg.jpg') }}" alt="ether" style="position: absolute; top: 0; border: 0; right: 0; height: 100%; width: 100%; opacity: .5; left: 0">#}
+        <div class="hero-head">
+            <nav class="navbar">
+                <div class="container">
+
+                    <div id="navbarMenuHeroA" class="navbar-menu">
+                        <div class="navbar-end">
+                            <a href="{{ url_for('main.index') }}" class="navbar-item">
+                                Home
+                            </a>
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
+                                Retrieved Videos
+                            </a>
+                            {% endif %}
+                            {% if not current_user.is_authenticated %}
+                            <a href="{{ url_for('main.login') }}" class="navbar-item">
+                                Login
+                            </a>
+                            <a href="{{ url_for('main.signup') }}" class="navbar-item">
+                                Sign Up
+                            </a>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('main.logout') }}" class="navbar-item">
+                                Logout
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="hero-body">
+            <div class="container has-text-centered">
+               {% block content %}
+               {% endblock %}
+            </div>
+        </div>
+        <footer style="align-items: center; text-align: center; z-index: 2;">
+            <p style="color: white !important;">Author: <a href="mailto:hhharsha36@gmail.com">Harshavardhan</a></p>
+            <p style="color: white !important;">Copyright © 2023 Ranapto. All rights reserved.</p>
+        </footer>
+    </section>
+</body>
+
+</html>

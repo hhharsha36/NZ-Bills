@@ -1,0 +1,17 @@
+# Cache
+__pycache__
+
+# OS
+.DS_Store
+
+# IDE
+.vscode
+
+# Settings
+.envrc
+.env
+
+# DB
+app.db
+/app/bills/parsedData.csv
+/config.yml

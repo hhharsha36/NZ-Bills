@@ -1,0 +1,22 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Hello, {{ name }}!
+</h1>
+<h2>Below is the retrieved 'COMPX W3 L2 - Authentication 4' video</h2>
+<br>
+<video width="1280" height="720" poster="{{ url_for('static', filename="thumbnail.png") }}" controls>
+    <source src={{ url_for('static', filename="COMPX518_W3_L2_-_Authentication_4.mp4") }} type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+<br>
+<br>
+<br>
+<h3 style="margin-top: 150px">Sorry for Rick Rolling you :)</h3>
+<br>
+<h3>The video used for this assignment is copyright protected and will be taken down as soon as the assignment
+evaluation is done.</h3>
+{% endblock %}

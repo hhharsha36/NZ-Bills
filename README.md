@@ -1,4 +1,21 @@
-# New Zealand Bills Cloud App Documentation
+# Dash on flask with flask_login
+
+An example of a seamless integration of a Dash app into an existing Flask app based on the application factory pattern.
+
+## To try it in local
+
+Clone the repo:
+
+```
+git clone https://github.com/okomarov/dash_on_flask
+```
+
+Setup some environment variables:
+
+```
+cd dash_on_flask
+touch .env
+```
 
 ## By Team: NeedMoneyToBuyGPU
 
