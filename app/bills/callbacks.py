@@ -423,7 +423,10 @@ def bills_register_dash_components(app):
 
     @app.callback(
         Output('NZ-bills-passed', 'figure', allow_duplicate=True),
-        Output('pie-order', 'value'),
+        Output('pie-order', 'value', allow_duplicate=True),
+        Output('include-other', 'value', allow_duplicate=True),
+        Output('year-range', 'value', allow_duplicate=True),
+        Output('size-range', 'value', allow_duplicate=True),
         Input('pie-order', 'value'),
         Input('include-other', 'value'),
         # Input('refresh-data', 'n_clicks'),
@@ -491,9 +494,10 @@ def bills_register_dash_components(app):
                         include_other_opt['year'] <= max(time_period_range))]
 
             if pie_order == 'By Prime Minister':
-                return get_fig_pm(source_data=include_other_opt, size=size_range), pie_order
-
-        return get_fig(source_data=include_other_opt, size=size_range), pie_order
+                return get_fig_pm(source_data=include_other_opt, size=size_range), pie_order, include_other, \
+                    time_period_range, size_range
+        return get_fig(source_data=include_other_opt, size=size_range), pie_order, include_other, \
+            time_period_range, size_range
 
     @app.callback(
         # Output('alert', 'is_open'),
@@ -525,15 +529,22 @@ def bills_register_dash_components(app):
     @app.callback(
         # Output('reset-container-button', 'children'),
         Output('NZ-bills-passed', 'figure'),
+        Output('pie-order', 'value'),
+        Output('include-other', 'value'),
+        Output('year-range', 'value'),
+        Output('size-range', 'value'),
         Input('button-reset-visualisation', 'n_clicks'),
         prevent_initial_call=True
     )
     def reset_fig(n_clicks):
         if not n_clicks:
-            return no_update
+            return tuple([no_update] * 5)
         if not update_usr_session(username=current_user.name, session_details=DEFAULT_VALUES):
-            return no_update
-        return get_fig(source_data=timeperiod_non_other_df.copy(), size=DEFAULT_VALUES['size_range'])
+            return tuple([no_update] * 5)
+        return get_fig(
+            source_data=timeperiod_non_other_df.copy(), size=DEFAULT_VALUES['size_range']
+        ), DEFAULT_VALUES['pie_order'], DEFAULT_VALUES['include_other'], DEFAULT_VALUES['time_period_range'], \
+            DEFAULT_VALUES['size_range']
         # return f'Saved to DB on: {datetime.now().isoformat()}'
 
 
