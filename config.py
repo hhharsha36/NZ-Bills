@@ -31,3 +31,8 @@ class BaseConfig:
     DISABLE_SIGNUP = CONFIG_DATA.get('DisableSignUp', False)
     STS_CLIENT = boto3.client('sesv2', **CONFIG_DATA['STS']['Credentials'])
     EMAIL_CONTENT = CONFIG_DATA['STS']['EmailContent']
+    S3_CLIENT = boto3.client('s3', **CONFIG_DATA['S3']['Credentials'])
+    S3_RESOURCE = boto3.resource('s3', **CONFIG_DATA['S3']['Credentials'])
+    BUCKET_NAME = CONFIG_DATA['S3']['BucketName']
+    S3_PATH = CONFIG_DATA['S3']['S3Path']
+    DOWNLOAD_KEY = CONFIG_DATA['S3']['Key']

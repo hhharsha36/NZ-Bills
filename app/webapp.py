@@ -5,11 +5,15 @@ from time import sleep
 import os
 
 from better_profanity import profanity
+from boto3.exceptions import S3UploadFailedError
 from botocore.exceptions import ClientError
 from bson.objectid import ObjectId
 from app.extensions import Crypt
-from flask import url_for, flash, request, render_template, redirect, Blueprint
+import pandas as pd
+from flask import url_for, flash, request, render_template, redirect, Blueprint, jsonify
 from flask_login import current_user, login_required, login_user, logout_user
+from urllib.request import Request, urlopen
+from urllib.error import URLError
 from werkzeug.urls import url_parse
 
 # from app.extensions import db
@@ -28,6 +32,9 @@ USERNAME_PATTERN = compile(r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A
 
 server_bp = Blueprint('main', __name__)
 crypt = Crypt()
+
+
+DOWNLOAD_PATH = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'bills/parsedData.csv')
 
 
 weak_passwords = []
@@ -299,6 +306,84 @@ def signup_post():
 
     logging.info(f"successfully created user: {username.upper()}")
     return redirect(url_for('main.login'))
+
+
+class UpdateData:
+    def __init__(self):
+        self._req_headers = {'User-Agent': 'Mozilla/5.0'}
+        self.page_count: int = 0
+        self.df: pd.DataFrame | None = None
+        self.file_name = 'parsedData.csv'
+        self.file_name = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'bills/parsedData.csv')
+
+    # def __call__(self, *args, **kwargs):
+    #     self.update()
+
+    def update(self):
+        self.page_count = 0
+        self.df = None
+        for page_count in range(1, 55):
+            req = self.get_data(page_count)
+            webpage = urlopen(req).read()
+            df_list = pd.read_html(webpage)[-1]
+
+            if self.df is None:
+                self.df = df_list
+            else:
+                self.df = pd.concat([self.df, df_list])
+            print(f"\r{page_count}", end='')
+        self.save_csv()
+        err = self.upload_to_s3()
+        return err
+
+    def get_data(self, page_no, attempt=0):
+        if attempt >= 10:
+            return None
+        try:
+            return Request(
+                f'https://www.parliament.nz/en/pb/bills-and-laws/bills-proposed-laws/all?Criteria.PageNumber={page_no}',
+                headers=self._req_headers)
+        except URLError:
+            attempt += 1
+            sleep(12)
+            return self.get_data(page_no=page_no, attempt=attempt)
+
+    def save_csv(self):
+        # if os.path.exists(self.file_name):
+        #     os.rename(src=self.file_name,
+        #               dst=f"{self.file_name.replace('.csv', '')}_{datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}_.csv")
+        self.df.to_csv(self.file_name)
+        return None
+
+    def upload_to_s3(self):
+        try:
+            os.path.abspath(os.path.dirname(__file__))
+            BaseConfig.S3_CLIENT.upload_file(
+                self.file_name, BaseConfig.BUCKET_NAME,
+                f'ParseHistory/parsedData_{datetime.now().strftime("%Y_%m_%d_%H_%M_%S")}_.csv')
+        except (ClientError, S3UploadFailedError) as e:
+            logging.error(e)
+            return 'error uploading to s3'
+        return None
+
+
+@server_bp.route('/download', methods=['POST', 'GET', 'PUT'])
+def download_data():
+    req = request.get_json()
+    if not req.get('key'):
+        return jsonify({'error': True, 'status': '`key` missing in request'})
+    elif req.get('key') != BaseConfig.DOWNLOAD_KEY:
+        return jsonify({'error': True, 'status': 'wrong key'})
+    update_data_obj = UpdateData()
+    err = update_data_obj.update()
+    if err:
+        return jsonify({'error': True, 'status': err})
+    # try:
+    #     BaseConfig.S3_CLIENT.download_file(BaseConfig.BUCKET_NAME, BaseConfig.S3_PATH, DOWNLOAD_PATH)
+    # except ClientError as e:
+    #     logging.error(e)
+    #     return jsonify({'error': True, 'status': 'error downloading file'})
+    return jsonify({'error': False, 'status': 'success'})
 
 
 @server_bp.route('/profile')

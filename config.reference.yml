@@ -1,0 +1,33 @@
+Pepper: "S0m3P3pp3rva1u3"
+
+DynamoDB:
+  Credentials:
+#    aws_access_key_id: "dfvdf"
+#    aws_secret_access_key: "DFvdfv"
+    endpoint_url: "http://localhost:8000"
+  UsersTableName: "Users"
+  NzPmTableName: "NzPm"
+
+STS:
+  Credentials:
+  #    aws_access_key_id: "dfvdf"
+  #    aws_secret_access_key: "DFvdfv"
+    region_name: "ap-southeast-2"
+  EmailContent:
+    From: "NZ Bill Visualisation <into@compx527.s1.pkgsons.com>"
+    Subject: "Copy of visualisation Requested on: "
+#    BodyText: "Kia Ora,\n\nBelow is the requested visualisation image.\n"
+    H1: "Kia Ora,"
+    Body: "Below is the requested visualisation image."
+
+S3:
+  Credentials:
+    #    aws_access_key_id: "dfvdf"
+    #    aws_secret_access_key: "DFvdfv"
+    region_name: "ap-southeast-2"
+  BucketName: "compx527-bills"
+  S3Path: "parsedData.csv"
+  Key: "S3D0wn10adK3y"
+
+
+DisableSignUp: False
