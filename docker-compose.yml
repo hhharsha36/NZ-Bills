@@ -5,8 +5,9 @@ services:
     build: .
     volumes:
       - .:/app
-    env_file:
-      - .env
+#    env_file:
+#      - .env
     ports:
-      - "5000:5000"
+#      - "5000:5000"
+      - "5001:5001"
     entrypoint: /app/entrypoint.sh
