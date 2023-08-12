@@ -28,7 +28,6 @@ from app.bills.internal import get_last_session, YEAR_RANGE
 
 PM_DETAILS = get_pm_data()
 colour_discretion_map = {f"{d['name']} ({d['party']})": d['colour'] for d in PM_DETAILS}
-# colour_discretion_map = {f"{d['name']} ({d['party']})": d['colour'] for d in PM_DETAILS}
 colour_discretion_map['(?)'] = 'Purple'
 
 # TODO: review year start data, confirm that it is from year 2008
@@ -518,11 +517,11 @@ def bills_register_dash_components(app):
         if not current_user.is_authenticated:
             children = 'not logged in'
             return children, is_open, color
-        # TODO: uncomment
-        # if email_image(recipient=current_user, img_path=''):
-        #     children = f'successfully sent email on: {datetime.now()}'
-        #     color = 'success'
-        #     return children, is_open, color
+
+        if email_image(recipient=current_user, img_path=''):
+            children = f'successfully sent email on: {datetime.now()}'
+            color = 'success'
+            return children, is_open, color
         children = 'error sending email'
         return children, is_open, color
 

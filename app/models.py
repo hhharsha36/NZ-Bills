@@ -1,10 +1,10 @@
 # from flask_login import UserMixin
 # from werkzeug.security import check_password_hash
 # from werkzeug.security import generate_password_hash
-import logging
-
-from app.extensions import users_table, login_manager
-from app.webapp import SignIn, get_user_from_db
+# import logging
+#
+# from app.extensions import users_table, login_manager
+# from app.webapp import SignIn, get_user_from_db
 
 
 # @login.user_loader
