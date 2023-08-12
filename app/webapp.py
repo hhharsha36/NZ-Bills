@@ -17,6 +17,8 @@ from werkzeug.urls import url_parse
 # from app.forms import RegistrationForm
 # from app.models import User
 
+from app.bills.callbacks import DEFAULT_VALUES
+from app.bills.internal import get_usr_from_db
 from app.extensions import users_table
 from config import BaseConfig
 
@@ -47,17 +49,17 @@ with open(forbidden_pwd_path) as file:
         forbidden_usernames.append(line.rstrip())
 
 
-def get_user_from_db(username: str):
-    try:
-        found_usr = users_table.get_item(Key={"Username": username})
-        logging.debug(f'{found_usr=}')  # TODO: remove
-        if isinstance(found_usr, dict):
-            found_usr = found_usr.get('Item')
-    except ClientError as e:
-        logging.error(e)
-        found_usr = None
-    logging.debug(f'{found_usr=}')  # TODO: remove
-    return found_usr
+# def get_user_from_db(username: str):
+#     try:
+#         found_usr = users_table.get_item(Key={"Username": username})
+#         logging.debug(f'{found_usr=}')  # TODO: remove
+#         if isinstance(found_usr, dict):
+#             found_usr = found_usr.get('Item')
+#     except ClientError as e:
+#         logging.error(e)
+#         found_usr = None
+#     logging.debug(f'{found_usr=}')  # TODO: remove
+#     return found_usr
 
 
 class SignUp:
@@ -94,7 +96,7 @@ class SignUp:
                    "only be between me :)"
         if self.has_repeating_char():
             return "Your password has repeating characters. If its your keyboard, I recommend you to buy " \
-                   "Keychron K2 Mechanical keyboard, which is reliable"
+                   "KeyChron K2 Mechanical keyboard, which is reliable"
         if self.has_seq_chars():
             return "Your password contains four or more sequential characters, which makes it easier for " \
                    "elementary kids to guess"
@@ -109,8 +111,8 @@ class SignUp:
         hashed_pwd = crypt.encrypt(salt=str(usr_oid), plain_txt_pwd=self._password)
 
         # if self._user_col.find_one({"Username": self._username}, {"_id": 1}):  # TODO: update query
-        found_user = get_user_from_db(self._username)
-        if not found_user:
+        found_user = get_usr_from_db(self._username)
+        if found_user:
             return "Username already exists! If you forgot your password, I am afraid the 'Forgot Password' feature " \
                    "can't be implemented with current budget"
 
@@ -128,6 +130,7 @@ class SignUp:
                 "Password": hashed_pwd,
                 "CreatedAt": curr_time,
                 "UpdatedAt": curr_time,
+                "LastSession": DEFAULT_VALUES,
             }
         )
 
@@ -194,7 +197,7 @@ class SignIn:
 
     def log_in(self):
         global crypt
-        found_usr = get_user_from_db(self._username)
+        found_usr = get_usr_from_db(self._username)
         logging.debug(f'{found_usr=}')  # TODO: remove
         if not found_usr:
             return False

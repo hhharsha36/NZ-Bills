@@ -92,8 +92,8 @@ def read_all(dynamodb):
 
 
 if __name__ == '__main__':
-    # book_table = create_pm_table(DYNAMO_DB_CONF)
-    # print("Status:", book_table.table_status)
-    # print(f'{book_table=}')
-    # insert_pm_data(DYNAMO_DB_CONF)
+    pm_table = create_pm_table(DYNAMO_DB_CONF)
+    print("Status:", pm_table.table_status)
+    print(f'{pm_table=}')
+    insert_pm_data(DYNAMO_DB_CONF)
     read_all(DYNAMO_DB_CONF)

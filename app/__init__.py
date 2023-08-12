@@ -12,9 +12,10 @@ from config import BaseConfig
 # from app import dashapp1 as test_app
 from app.dashapp1.layout import layout as a1_layout
 from app.dashapp1.callbacks import register_callbacks as a1_register_callbacks
-from app.webapp import server_bp, SignIn, get_user_from_db
+from app.webapp import server_bp, SignIn
 
 from app.bills.callbacks import bills_register_dash_components
+from app.bills.internal import get_usr_from_db
 
 
 def create_app():
@@ -57,8 +58,7 @@ def register_dash_apps(app):
                           server=app,
                           url_base_pathname='/bills/',
                           assets_folder=bills_assets_path,
-                          meta_tags=[meta_viewport],
-                          prevent_initial_callbacks="initial_duplicate")
+                          meta_tags=[meta_viewport])
     with app.app_context():
         # dashapp1.title = 'New Zealand Parliament Bills Visualisation'
         # dashapp1.layout =
@@ -75,8 +75,9 @@ def _protect_dash_views(dashapp):
 
 
 def load_user_from_db(username: str):
-    u = get_user_from_db(username=username)
+    u = get_usr_from_db(username=username)
     # u = users_table.find_one({"Username": username.upper()})  # TODO: update query
+    logging.debug(f'load_user_from_db: {u=}')
     if not u:
         return None
     # return SignIn(username=username, password='None', user_col=users_collection)

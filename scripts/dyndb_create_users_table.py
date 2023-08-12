@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import boto3
 
 
@@ -75,7 +77,19 @@ def create_books_table(dynamodb):
     return table
 
 
+def read_all(dynamodb):
+    dynamodb = boto3.resource('dynamodb', **dynamodb)
+    pm_table = dynamodb.Table('Users')
+    response = pm_table.scan()
+    print(f'{response=}')
+    if not isinstance(response, dict) or not response.get('Items'):
+        ValueError('unable to retrieve pm information from DB')
+    for r in response['Items']:
+        pprint(f'{r=}')
+
+
 if __name__ == '__main__':
-    book_table = create_books_table(DYNAMO_DB_CONF)
-    print("Status:", book_table.table_status)
-    print(f'{book_table=}')
+    # users_table = create_books_table(DYNAMO_DB_CONF)
+    # print("Status:", users_table.table_status)
+    # print(f'{users_table=}')
+    read_all(DYNAMO_DB_CONF)
