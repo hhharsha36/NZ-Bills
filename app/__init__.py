@@ -57,7 +57,8 @@ def register_dash_apps(app):
                           server=app,
                           url_base_pathname='/bills/',
                           assets_folder=bills_assets_path,
-                          meta_tags=[meta_viewport])
+                          meta_tags=[meta_viewport],
+                          prevent_initial_callbacks="initial_duplicate")
     with app.app_context():
         # dashapp1.title = 'New Zealand Parliament Bills Visualisation'
         # dashapp1.layout =

@@ -10,6 +10,7 @@ from config import BaseConfig
 
 STS_CLIENT = BaseConfig.STS_CLIENT
 EMAIL_CONTENT = BaseConfig.EMAIL_CONTENT
+USERS_TABLE = BaseConfig.USERS_TABLE
 
 
 def get_pm_data():
@@ -63,3 +64,19 @@ def email_image(recipient, img_path):
     else:
         logging.info(f'successfully sent email to: {recipient}; message id: {response["MessageId"]}')
         return True
+
+
+def get_usr_from_db(username: str):
+    response = USERS_TABLE.get_item(Key={'Username': username})
+    if not response or not response.get('Items'):
+        return None
+    return response
+
+
+def update_usr_session_to_db(username: str, session_data: dict):
+    USERS_TABLE.update_item(
+        Key={'Username': username},
+        AttributeUpdates={
+            'RememberSession': session_data,
+        },
+    )
