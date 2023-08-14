@@ -95,6 +95,9 @@ def read_pd_from_csv():
     return tmp_df, tmp_timeperiod_df, tmp_timeperiod_non_other_df, tmp_category_df
 
 
+df, timeperiod_df, timeperiod_non_other_df, category_df = read_pd_from_csv()
+
+
 def get_fig(source_data: pd.DataFrame, size: int):
     fig = go.Figure(px.sunburst(data_frame=source_data, path=['image', 'year', 'month', 'Committee', 'Name of bill'],
                                 width=size, height=size, maxdepth=4, color='PM',
@@ -162,9 +165,15 @@ def get_fig_pm(source_data: pd.DataFrame, size: int):
     return category_fig
 
 
+def refresh_df():
+    global df, timeperiod_df, timeperiod_non_other_df, category_df
+    df, timeperiod_df, timeperiod_non_other_df, category_df = read_pd_from_csv()
+
+
 def bills_register_dash_components(app):
     # fig_size = 1_600
-    df, timeperiod_df, timeperiod_non_other_df, category_df = read_pd_from_csv()
+    refresh_df()
+    global df, timeperiod_df, timeperiod_non_other_df, category_df
     # number_of_refresh_clicks = 0
 
     app.title = "Information Visualisation - Project"

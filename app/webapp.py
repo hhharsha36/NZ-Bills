@@ -21,7 +21,7 @@ from werkzeug.urls import url_parse
 # from app.forms import RegistrationForm
 # from app.models import User
 
-from app.bills.callbacks import DEFAULT_VALUES
+from app.bills.callbacks import DEFAULT_VALUES, refresh_df
 from app.bills.internal import get_usr_from_db
 from app.extensions import users_table
 from config import BaseConfig
@@ -378,6 +378,8 @@ def download_data():
     err = update_data_obj.update()
     if err:
         return jsonify({'error': True, 'status': err})
+
+    refresh_df()
     # try:
     #     BaseConfig.S3_CLIENT.download_file(BaseConfig.BUCKET_NAME, BaseConfig.S3_PATH, DOWNLOAD_PATH)
     # except ClientError as e:
