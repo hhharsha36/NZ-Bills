@@ -1,9 +1,14 @@
-from datetime import datetime
+import os
 
 import boto3
+import yaml
 
 
-DYNAMO_DB_CONF = dict(endpoint_url='http://localhost:8000')
+CONFIG_PATH: str = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../config.yml")
+
+with open(CONFIG_PATH, 'r') as stream:
+    CONFIG_DATA = yaml.safe_load(stream)
+DYNAMO_DB_CONF = CONFIG_DATA['DynamoDB']['Credentials']
 TABLE_NAME = 'Users'
 
 

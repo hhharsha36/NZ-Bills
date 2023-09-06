@@ -1,6 +1,7 @@
 import os
 
 import boto3
+from pymongo import MongoClient
 import yaml
 
 
@@ -36,3 +37,6 @@ class BaseConfig:
     BUCKET_NAME = CONFIG_DATA['S3']['BucketName']
     S3_PATH = CONFIG_DATA['S3']['S3Path']
     DOWNLOAD_KEY = CONFIG_DATA['S3']['Key']
+    MDB_CLIENT = MongoClient(CONFIG_DATA['MongoDB']['URI'])
+    M_DB = MDB_CLIENT.get_database(CONFIG_DATA['MongoDB']['DB'])
+    M_USERS_COL = M_DB.get_collection(CONFIG_DATA['MongoDB']['Users'])

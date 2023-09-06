@@ -1,9 +1,14 @@
+import os
 from pprint import pprint
 
 import boto3
+import yaml
 
+CONFIG_PATH: str = os.path.join(os.path.abspath(os.path.dirname(__file__)), "../config.yml")
 
-DYNAMO_DB_CONF = dict(endpoint_url='http://localhost:8000')
+with open(CONFIG_PATH, 'r') as stream:
+    CONFIG_DATA = yaml.safe_load(stream)
+DYNAMO_DB_CONF = CONFIG_DATA['DynamoDB']['Credentials']
 
 
 def create_books_table(dynamodb):
@@ -89,7 +94,7 @@ def read_all(dynamodb):
 
 
 if __name__ == '__main__':
-    # users_table = create_books_table(DYNAMO_DB_CONF)
+    users_table = create_books_table(DYNAMO_DB_CONF)
     # print("Status:", users_table.table_status)
     # print(f'{users_table=}')
     read_all(DYNAMO_DB_CONF)

@@ -252,15 +252,15 @@ def login_post():
 
     # user = User.query.filter_by(email=username).first()
 
-    # check if user actually exists
-    # take the user supplied password, hash it, and compare it to the hashed password in database
+    # check if user actually exists,
+    # take the user supplied password, hash it, and compare it to the hashed password in a database
     sign_in_obj = SignIn(username=username, password=password)
     if not sign_in_obj.log_in():
         msg = "Username or Password is incorrect. Note: 'Forgot Password' feature will be made available by June 2030"
         logging.warning(msg)
         sleep(0.5)
         flash(msg)
-        return redirect(url_for('main.login'))  # if user doesn't exist or password is wrong, reload the page
+        return redirect(url_for('main.login'))  # if a user doesn't exist or password is wrong, reload the page
 
     # if the above check passes, then we know the user has the right credentials
     login_user(sign_in_obj, remember=remember)

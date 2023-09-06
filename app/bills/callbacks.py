@@ -165,6 +165,34 @@ def get_fig_pm(source_data: pd.DataFrame, size: int):
     return category_fig
 
 
+def get_fig_pm_priority(source_data: pd.DataFrame, size: int):
+    category_fig = px.sunburst(data_frame=source_data, path=['image', 'Committee', 'PM', 'Name of bill'],
+                               width=size, height=size, maxdepth=3, color='Committee')
+
+    category_fig.update_layout(
+        updatemenus=[
+            dict(
+                buttons=list([
+                    dict(
+                        args=["maxdepth", 3],
+                        label="2",
+                        method="restyle"
+                    ),
+                    dict(
+                        args=["maxdepth", 4],
+                        label="3",
+                        method="restyle"
+                    ),
+                ]),
+                type="buttons",
+                direction="left",
+            ),
+        ]
+    )
+
+    return category_fig
+
+
 def refresh_df():
     global df, timeperiod_df, timeperiod_non_other_df, category_df
     df, timeperiod_df, timeperiod_non_other_df, category_df = read_pd_from_csv()
@@ -502,6 +530,9 @@ def bills_register_dash_components(app):
                         include_other_opt['year'] <= max(time_period_range))]
 
             if pie_order == 'By Prime Minister':
+                return get_fig_pm(source_data=include_other_opt, size=size_range), pie_order, include_other, \
+                    time_period_range, size_range
+            elif pie_order == 'By Prime Minister Priority':
                 return get_fig_pm(source_data=include_other_opt, size=size_range), pie_order, include_other, \
                     time_period_range, size_range
         return get_fig(source_data=include_other_opt, size=size_range), pie_order, include_other, \
