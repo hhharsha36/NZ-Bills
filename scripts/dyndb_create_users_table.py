@@ -98,5 +98,6 @@ if __name__ == '__main__':
     users_table = create_books_table(DYNAMO_DB_CONF)
     print("Status:", users_table.table_status)
     print(f'{users_table=}')
-    sleep(60)
+    print('sleeping for 10 seconds')
+    sleep(10)
     read_all(DYNAMO_DB_CONF)

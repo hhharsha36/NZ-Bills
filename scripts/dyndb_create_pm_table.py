@@ -103,6 +103,7 @@ if __name__ == '__main__':
     pm_table = create_pm_table(DYNAMO_DB_CONF)
     print("Status:", pm_table.table_status)
     print(f'{pm_table=}')
-    sleep(60)
+    print('sleeping for 10 seconds')
+    sleep(10)
     insert_pm_data(DYNAMO_DB_CONF)
     read_all(DYNAMO_DB_CONF)
