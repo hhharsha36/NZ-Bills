@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 import os
 
 import boto3
@@ -75,18 +76,19 @@ def create_pm_table(dynamodb):
 
 def insert_pm_data(dynamodb):
     dynamodb = boto3.resource('dynamodb', **dynamodb)
-    pm_table = dynamodb.Table(TABLE_NAME)
+    tmp_pm_table = dynamodb.Table(TABLE_NAME)
+    print(tmp_pm_table.scan())
     for pm_details in PM_LIST:
         pm_details['term'] = int(pm_details['term'])
-        response = pm_table.put_item(Item=pm_details)
+        response = tmp_pm_table.put_item(Item=pm_details)
         print(f'{response=}')
     return None
 
 
 def read_all(dynamodb):
     dynamodb = boto3.resource('dynamodb', **dynamodb)
-    pm_table = dynamodb.Table(TABLE_NAME)
-    response = pm_table.scan()
+    tmp_pm_table = dynamodb.Table(TABLE_NAME)
+    response = tmp_pm_table.scan()
     print(f'{response=}')
     if not isinstance(response, dict) or not response.get('Items'):
         ValueError('unable to retrieve pm information from DB')
@@ -101,5 +103,6 @@ if __name__ == '__main__':
     pm_table = create_pm_table(DYNAMO_DB_CONF)
     print("Status:", pm_table.table_status)
     print(f'{pm_table=}')
+    sleep(60)
     insert_pm_data(DYNAMO_DB_CONF)
     read_all(DYNAMO_DB_CONF)

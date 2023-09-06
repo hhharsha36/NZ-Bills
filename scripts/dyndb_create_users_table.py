@@ -1,5 +1,6 @@
 import os
 from pprint import pprint
+from time import sleep
 
 import boto3
 import yaml
@@ -95,6 +96,7 @@ def read_all(dynamodb):
 
 if __name__ == '__main__':
     users_table = create_books_table(DYNAMO_DB_CONF)
-    # print("Status:", users_table.table_status)
-    # print(f'{users_table=}')
+    print("Status:", users_table.table_status)
+    print(f'{users_table=}')
+    sleep(60)
     read_all(DYNAMO_DB_CONF)
