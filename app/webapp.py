@@ -1,5 +1,5 @@
 from datetime import datetime
-import logging  # TODO: log to a file instead
+import logging
 from re import compile
 from time import sleep
 import os
@@ -59,13 +59,11 @@ with open(forbidden_pwd_path) as file:
 # def get_user_from_db(username: str):
 #     try:
 #         found_usr = users_table.get_item(Key={"Username": username})
-#         logging.debug(f'{found_usr=}')  # TODO: remove
 #         if isinstance(found_usr, dict):
 #             found_usr = found_usr.get('Item')
 #     except ClientError as e:
 #         logging.error(e)
 #         found_usr = None
-#     logging.debug(f'{found_usr=}')  # TODO: remove
 #     return found_usr
 
 
@@ -117,19 +115,11 @@ class SignUp:
         curr_time = datetime.now().isoformat()
         hashed_pwd = crypt.encrypt(salt=str(usr_oid), plain_txt_pwd=self._password)
 
-        # if self._user_col.find_one({"Username": self._username}, {"_id": 1}):  # TODO: update query
         found_user = get_usr_from_db(self._username)
         if found_user:
             return "Username already exists! If you forgot your password, I am afraid the 'Forgot Password' feature " \
                    "can't be implemented with current budget"
 
-        # self._user_col.insert_one({  # TODO: update query
-        #     "_id": usr_oid,
-        #     "Username": self._username,
-        #     "Password": hashed_pwd,
-        #     "CreatedAt": curr_time,
-        #     "UpdatedAt": curr_time,
-        # })
         resp = self._user_col.put_item(  # TODO: handle `resp` variable
             Item={
                 "_id": usr_oid,
@@ -171,8 +161,8 @@ class SignUp:
                 else:
                     seq_count = 0
                 previous_char = i
-        except Exception:
-            # TODO: log
+        except Exception as e:
+            logging.error(e)
             return False
         return False
 
@@ -200,12 +190,12 @@ class SignIn:
         self._password = password
         self._user_col = users_table
         self.name = self._username
-        self._logged_in = False  # TODO: remove
+        self._logged_in = False
 
     def log_in(self):
         global crypt
         found_usr = get_usr_from_db(self._username)
-        logging.debug(f'{found_usr=}')  # TODO: remove
+        logging.debug(f'{found_usr=}')
         if not found_usr:
             return False
         # found_usr = self._user_col.find_one({"Username": self._username})  # TODO: update query
@@ -331,7 +321,7 @@ class UpdateData:
                 self.df = df_list
             else:
                 self.df = pd.concat([self.df, df_list])
-            print(f"\r{page_count}", end='')
+            logging.debug(f"{page_count=}")
         self.save_csv()
         err = self.upload_to_s3()
         return err

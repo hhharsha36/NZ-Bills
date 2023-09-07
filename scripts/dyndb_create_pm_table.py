@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 from time import sleep
 import os
 
@@ -77,11 +78,11 @@ def create_pm_table(dynamodb):
 def insert_pm_data(dynamodb):
     dynamodb = boto3.resource('dynamodb', **dynamodb)
     tmp_pm_table = dynamodb.Table(TABLE_NAME)
-    print(tmp_pm_table.scan())
+    logging.debug(f'{tmp_pm_table.scan()=}')
     for pm_details in PM_LIST:
         pm_details['term'] = int(pm_details['term'])
         response = tmp_pm_table.put_item(Item=pm_details)
-        print(f'{response=}')
+        logging.debug(f'{response=}')
     return None
 
 
@@ -89,21 +90,21 @@ def read_all(dynamodb):
     dynamodb = boto3.resource('dynamodb', **dynamodb)
     tmp_pm_table = dynamodb.Table(TABLE_NAME)
     response = tmp_pm_table.scan()
-    print(f'{response=}')
+    logging.debug(f'{response=}')
     if not isinstance(response, dict) or not response.get('Items'):
         ValueError('unable to retrieve pm information from DB')
     for r in response['Items']:
-        print(f'{r=}')
+        logging.debug(f'{r=}')
         r['term'] = int(r['term'])
     response = sorted(response['Items'], key=lambda x: x.get('term'), reverse=True)
-    print(f'sorted {response=}')
+    logging.debug(f'sorted {response=}')
 
 
 if __name__ == '__main__':
     pm_table = create_pm_table(DYNAMO_DB_CONF)
-    print("Status:", pm_table.table_status)
-    print(f'{pm_table=}')
-    print('sleeping for 10 seconds')
+    logging.debug("Status:", pm_table.table_status)
+    logging.debug(f'{pm_table=}')
+    logging.debug('sleeping for 10 seconds')
     sleep(10)
     insert_pm_data(DYNAMO_DB_CONF)
     read_all(DYNAMO_DB_CONF)

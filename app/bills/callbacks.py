@@ -84,13 +84,13 @@ def read_pd_from_csv():
     tmp_timeperiod_df = tmp_df.copy()
     tmp_timeperiod_df['Committee_no_other'] = tmp_timeperiod_df['Committee']
     tmp_timeperiod_df.loc[tmp_timeperiod_df["Committee_no_other"] == "Other", "Committee_no_other"] = np.NaN
-    print(tmp_timeperiod_df.head())
+    # logging.debug(tmp_timeperiod_df.head())
     tmp_timeperiod_non_other_df = tmp_df.copy()
     tmp_timeperiod_non_other_df.drop(
         tmp_timeperiod_non_other_df[tmp_timeperiod_non_other_df['Committee'] == 'Other'].index, inplace=True)
 
     tmp_category_df = tmp_df.copy()
-    print(tmp_category_df.head())
+    # logging.debug(tmp_category_df.head())
     tmp_category_df.drop(tmp_category_df[tmp_category_df['Committee'] == 'Other'].index, inplace=True)
     return tmp_df, tmp_timeperiod_df, tmp_timeperiod_non_other_df, tmp_category_df
 

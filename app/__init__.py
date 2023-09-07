@@ -8,8 +8,6 @@ import logging
 
 from config import BaseConfig
 
-# TODO: remove before deployment
-# from app import dashapp1 as test_app
 from app.dashapp1.layout import layout as a1_layout
 from app.dashapp1.callbacks import register_callbacks as a1_register_callbacks
 from app.webapp import server_bp, SignIn
@@ -26,7 +24,7 @@ def create_app():
     register_extensions(server)
     register_blueprints(server)
 
-    logging.debug(f'{print(server.url_map)=}')  # TODO: remove
+    logging.debug(f'{server.url_map=}')
 
     return server
 
@@ -37,22 +35,7 @@ def register_dash_apps(app):
         "name": "viewport",
         "content": "width=device-width, initial-scale=1, shrink-to-fit=no"}
 
-    # TODO: remove `dashapp1`
-    # dashapp1 = dash.Dash(__name__,
-    #                      server=app,
-    #                      url_base_pathname='/dashboard/',
-    #                      assets_folder=get_root_path(__name__) + '/dashboard/assets/',
-    #                      meta_tags=[meta_viewport])
-    # with app.app_context():
-    #     dashapp1.title = 'Dashapp 1'
-    #     dashapp1.layout = a1_layout
-    #     a1_register_callbacks(dashapp1)
-    #
-    # _protect_dash_views(dashapp1)
-
     bills_assets_path = os.path.join(get_root_path(__name__), 'bills', 'assets')
-    # TODO: remove
-    print(f'{bills_assets_path=}')
     logging.debug(f'{bills_assets_path=}')
     bills_app = dash.Dash(__name__,
                           server=app,
@@ -76,7 +59,6 @@ def _protect_dash_views(dashapp):
 
 def load_user_from_db(username: str):
     u = get_usr_from_db(username=username)
-    # u = users_table.find_one({"Username": username.upper()})  # TODO: update query
     logging.debug(f'load_user_from_db: {u=}')
     if not u:
         return None

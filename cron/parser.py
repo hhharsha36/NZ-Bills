@@ -1,4 +1,5 @@
 import json
+import logging
 # from urllib import request, parse
 
 from package import requests
@@ -7,11 +8,11 @@ from package import requests
 def lambda_handler(event, context):
     with open('./config.json') as f:
         config = json.load(f)
-        print(config)
+        logging.debug(f'{config=}')
 
     res = requests.post(config.get('url'), json={'key': config.get('key')})
-    print(res.status_code)
-    print(res.json())
+    logging.debug(f'{res.status_code=}')
+    logging.debug(f'{res.json()=}')
     return res
 
 

@@ -1,3 +1,4 @@
+import logging
 import os
 
 import boto3
@@ -40,3 +41,4 @@ class BaseConfig:
     MDB_CLIENT = MongoClient(CONFIG_DATA['MongoDB']['URI'])
     M_DB = MDB_CLIENT.get_database(CONFIG_DATA['MongoDB']['DB'])
     M_USERS_COL = M_DB.get_collection(CONFIG_DATA['MongoDB']['Users'])
+    DEBUG_MODE = CONFIG_DATA.get('DebugMode', False)

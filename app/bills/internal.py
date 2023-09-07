@@ -11,6 +11,7 @@ from config import BaseConfig
 STS_CLIENT = BaseConfig.STS_CLIENT
 EMAIL_CONTENT = BaseConfig.EMAIL_CONTENT
 USERS_TABLE = BaseConfig.USERS_TABLE
+M_USERS_COL = BaseConfig.M_USERS_COL
 
 
 SIZE_RANGE = range(1000, 2500, 100)
@@ -81,38 +82,91 @@ def get_usr_from_db(username: str):
     return found_usr['Item']
 
 
+# def update_usr_session(username: str, session_details: dict):
+#     try:
+#         logging.debug(f'update_usr_session; {session_details=}')
+#         _ = USERS_TABLE.update_item(
+#             Key={'Username': username},
+#             UpdateExpression="set LastSession.pie_order=:pie_order, LastSession.include_other=:include_other, "
+#                              "LastSession.time_period_range=:time_period_range, LastSession.size_range=:size_range",
+#             ExpressionAttributeValues={
+#                 ":pie_order": session_details.get('pie_order', ''),
+#                 ":include_other": session_details.get('include_other', ''),
+#                 ":time_period_range": session_details.get('time_period_range', ''),
+#                 ":size_range": session_details.get('size_range', ''),
+#             },
+#             # AttributeUpdates={
+#             #     'LastSession.pie_order': session_details.get('pie_order', ''),
+#             #     'LastSession.include_other': session_details.get('include_other', ''),
+#             #     'LastSession.time_period_range': session_details.get('time_period_range', ''),
+#             #     'LastSession.size_range': session_details.get('size_range', ''),
+#             # },
+#             ReturnValues="UPDATED_NEW"
+#         )
+#     except ClientError as e:
+#         logging.error(e)
+#         print('update_usr_session: None')
+#         return None
+#     print('update_usr_session: True')
+#     return True
+
+
 def update_usr_session(username: str, session_details: dict):
     try:
         logging.debug(f'update_usr_session; {session_details=}')
-        _ = USERS_TABLE.update_item(
-            Key={'Username': username},
-            UpdateExpression="set LastSession.pie_order=:pie_order, LastSession.include_other=:include_other, "
-                             "LastSession.time_period_range=:time_period_range, LastSession.size_range=:size_range",
-            ExpressionAttributeValues={
-                ":pie_order": session_details.get('pie_order', ''),
-                ":include_other": session_details.get('include_other', ''),
-                ":time_period_range": session_details.get('time_period_range', ''),
-                ":size_range": session_details.get('size_range', ''),
+        M_USERS_COL.update_one({
+            'Username': username
+        }, {
+            '$set': {
+                'LastSession': session_details,
+                'UpdatedAt': datetime.now()
             },
-            # AttributeUpdates={
-            #     'LastSession.pie_order': session_details.get('pie_order', ''),
-            #     'LastSession.include_other': session_details.get('include_other', ''),
-            #     'LastSession.time_period_range': session_details.get('time_period_range', ''),
-            #     'LastSession.size_range': session_details.get('size_range', ''),
-            # },
-            ReturnValues="UPDATED_NEW"
-        )
-    except ClientError as e:
+            '$setOnInsert': {
+                'CreatedAt': datetime.now()
+            }
+        }, upsert=True)
+    except Exception as e:
         logging.error(e)
-        # TODO: remove print statements from everywhere
-        print('update_usr_session: None')
+        logging.debug('update_usr_session: None')
         return None
-    print('update_usr_session: True')
+    logging.debug('update_usr_session: True')
     return True
 
 
+# def get_last_session(username):
+#     found_user = get_usr_from_db(username)
+#     logging.debug(f'get_last_session; {found_user=}')
+#     if not found_user or not isinstance(found_user.get('LastSession'), dict):
+#         logging.debug(f'get_last_session; "LastSession"')
+#         return None
+#
+#     if found_user['LastSession'].get('pie_order') not in ['By Prime Minister', 'By Time']:
+#         logging.debug(f'get_last_session; "pie_order"')
+#         return None
+#     elif found_user['LastSession'].get('include_other') not in ['Yes', 'No']:
+#         logging.debug(f'get_last_session; "include_other"')
+#         return None
+#     elif found_user['LastSession'].get('size_range') not in SIZE_RANGE:
+#         logging.debug(f'get_last_session; "size_range"')
+#         return None
+#     elif not isinstance(found_user['LastSession'].get('time_period_range'), list) or not len(
+#             found_user['LastSession']['time_period_range']) == 2:
+#         logging.debug(f'get_last_session; "time_period_range"')
+#         return None
+#
+#     for i, e in enumerate(found_user['LastSession']['time_period_range']):
+#         if int(e) not in YEAR_RANGE:
+#             logging.debug(f'get_last_session; "time_period_range"; {e}')
+#             return None
+#         found_user['LastSession']['time_period_range'][i] = int(e)
+#
+#     found_user['LastSession']['size_range'] = int(found_user['LastSession']['size_range'])
+#     logging.debug(f'get_last_session; "SUCCESS"')
+#     return found_user['LastSession']
+
+
 def get_last_session(username):
-    found_user = get_usr_from_db(username)
+    found_user = M_USERS_COL.find_one({'Username': username})
     logging.debug(f'get_last_session; {found_user=}')
     if not found_user or not isinstance(found_user.get('LastSession'), dict):
         logging.debug(f'get_last_session; "LastSession"')

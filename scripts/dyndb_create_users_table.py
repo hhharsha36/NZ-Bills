@@ -1,3 +1,4 @@
+import logging
 import os
 from pprint import pprint
 from time import sleep
@@ -87,17 +88,17 @@ def read_all(dynamodb):
     dynamodb = boto3.resource('dynamodb', **dynamodb)
     pm_table = dynamodb.Table('Users')
     response = pm_table.scan()
-    print(f'{response=}')
+    logging.debug(f'{response=}')
     if not isinstance(response, dict) or not response.get('Items'):
         ValueError('unable to retrieve pm information from DB')
     for r in response['Items']:
-        pprint(f'{r=}')
+        logging.debug(f'{r=}')
 
 
 if __name__ == '__main__':
     users_table = create_books_table(DYNAMO_DB_CONF)
-    print("Status:", users_table.table_status)
-    print(f'{users_table=}')
-    print('sleeping for 10 seconds')
+    logging.debug("Status:", users_table.table_status)
+    logging.debug(f'{users_table=}')
+    logging.debug('sleeping for 10 seconds')
     sleep(10)
     read_all(DYNAMO_DB_CONF)
