@@ -10,10 +10,14 @@ def lambda_handler(event, context):
         config = json.load(f)
         logging.debug(f'{config=}')
 
-    res = requests.post(config.get('url'), json={'key': config.get('key')})
-    logging.debug(f'{res.status_code=}')
-    logging.debug(f'{res.json()=}')
-    return res
+    try:
+        res = requests.post(config.get('url'), json={'key': config.get('key')}, timeout=3)
+        logging.debug(f'{res.status_code=}')
+        logging.debug(f'{res.json()=}')
+        return res
+    except requests.exceptions.ReadTimeout:
+        pass
+    return None
 
 
 if __name__ == '__main__':

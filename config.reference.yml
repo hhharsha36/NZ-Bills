@@ -34,6 +34,7 @@ MongoDB:
   DB: "compx527"
   Users: "users"
 
+DownloadAPIKey: "DownloadKey"
 
 DisableSignUp: False
 DebugMode: False
