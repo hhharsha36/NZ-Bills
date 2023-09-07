@@ -14,7 +14,6 @@ from flask import url_for, flash, request, render_template, redirect, Blueprint,
 from flask_login import current_user, login_required, login_user, logout_user
 from urllib.request import Request, urlopen
 from urllib.error import URLError
-from werkzeug.urls import url_parse
 
 # from app.extensions import db
 # from app.forms import LoginForm

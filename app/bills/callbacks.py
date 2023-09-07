@@ -167,7 +167,7 @@ def get_fig_pm(source_data: pd.DataFrame, size: int):
 
 def get_fig_pm_priority(source_data: pd.DataFrame, size: int):
     category_fig = px.sunburst(data_frame=source_data, path=['image', 'Committee', 'PM', 'Name of bill'],
-                               width=size, height=size, maxdepth=3, color='Committee')
+                               width=size, height=size, maxdepth=4, color='Committee')
 
     category_fig.update_layout(
         updatemenus=[
@@ -262,7 +262,7 @@ def bills_register_dash_components(app):
             dbc.Col(html.Div([
                 html.P('Change Nested Chart Index By:', style={'font-family': 'Verdana'}, ),
                 dcc.Dropdown(
-                    ['By Time', 'By Prime Minister'],
+                    ['By Time', 'By Prime Minister', 'By Category Priority'],
                     # TODO: what is the below line for?
                     'Chart Index',
                     searchable=False,
@@ -532,8 +532,8 @@ def bills_register_dash_components(app):
             if pie_order == 'By Prime Minister':
                 return get_fig_pm(source_data=include_other_opt, size=size_range), pie_order, include_other, \
                     time_period_range, size_range
-            elif pie_order == 'By Prime Minister Priority':
-                return get_fig_pm(source_data=include_other_opt, size=size_range), pie_order, include_other, \
+            elif pie_order == 'By Category Priority':
+                return get_fig_pm_priority(source_data=include_other_opt, size=size_range), pie_order, include_other, \
                     time_period_range, size_range
         return get_fig(source_data=include_other_opt, size=size_range), pie_order, include_other, \
             time_period_range, size_range
