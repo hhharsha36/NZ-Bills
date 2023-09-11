@@ -2,65 +2,204 @@
 
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NZBills</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bulma.min.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static',filename='main_page.css') }}"
+    />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='RanoptoLogo.png') }}"
+    /> -->
+  </head>
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ranapto</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='bulma.min.css') }}" />
-    <link rel= "stylesheet" type= "text/css" href="{{ url_for('static',filename='main_page.css') }}">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='RanoptoLogo.png') }}">
-</head>
-
-<body>
-    <section class="hero is-primary is-fullheight ether-class">
-{#    <img src="{{ url_for('static',filename='ether_bg.jpg') }}" alt="ether" style="background-size: cover; top: 0; border: 0; right: 0; left: 0">#}
-{#    <img src="{{ url_for('static',filename='ether_bg.jpg') }}" alt="ether" style="position: absolute; top: 0; border: 0; right: 0; height: 100%; width: 100%; opacity: .5; left: 0">#}
-        <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
-
-                    <div id="navbarMenuHeroA" class="navbar-menu">
-                        <div class="navbar-end">
-                            <a href="{{ url_for('main.index') }}" class="navbar-item">
-                                Home
-                            </a>
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
-                                Retrieved Videos
-                            </a>
-                            {% endif %}
-                            {% if not current_user.is_authenticated %}
-                            <a href="{{ url_for('main.login') }}" class="navbar-item">
-                                Login
-                            </a>
-                            <a href="{{ url_for('main.signup') }}" class="navbar-item">
-                                Sign Up
-                            </a>
-                            {% endif %}
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('main.logout') }}" class="navbar-item">
-                                Logout
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </nav>
+  <body>
+    <!-- Section 1 -->
+    <section class="w-full px-8 text-gray-700 bg-white">
+      <div
+        class="container flex flex-col flex-wrap items-center justify-between py-5 mx-auto md:flex-row max-w-7xl"
+      >
+        <div class="relative flex flex-col md:flex-row">
+          <a
+            href="{{ url_for('main.index') }}"
+            class="flex items-center mb-5 font-medium text-gray-900 lg:w-auto lg:items-center lg:justify-center md:mb-0"
+          >
+            <span
+              class="mx-auto text-xl font-black leading-none text-gray-900 select-none"
+              >NZ Bills<span class="text-indigo-600">.</span></span
+            >
+          </a>
         </div>
 
-        <div class="hero-body">
-            <div class="container has-text-centered">
-               {% block content %}
-               {% endblock %}
-            </div>
+        <div class="inline-flex items-center ml-5 space-x-6 lg:justify-end">
+          {% if not current_user.is_authenticated %}
+          <a
+            href="{{ url_for('main.login') }}"
+            class="text-base font-medium leading-6 text-gray-600 whitespace-no-wrap transition duration-150 ease-in-out hover:text-gray-900"
+          >
+            Log in
+          </a>
+          <a
+            href="{{ url_for('main.signup') }}"
+            class="inline-flex items-center justify-center px-4 py-2 text-base font-medium leading-6 text-white whitespace-no-wrap bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
+          >
+            Sign up
+          </a>
+          {% endif %} {% if current_user.is_authenticated %}
+          <a
+            href="{{ url_for('main.logout') }}"
+            class="text-base font-medium leading-6 text-gray-600 whitespace-no-wrap transition duration-150 ease-in-out hover:text-gray-900"
+          >
+            Logout
+          </a>
+          {% endif %}
         </div>
-        <footer style="align-items: center; text-align: center; z-index: 2;">
-            <p style="color: white !important;">Author: <a href="mailto:harsh96.nz@gmail.com">Harshavardhan</a></p>
-            <p style="color: white !important;">Copyright © 2023 NeedMoneyToBuyGPU. All rights reserved.</p>
-        </footer>
+      </div>
     </section>
-</body>
 
+    <!-- Section 2 -->
+    <section class="px-2 py-32 bg-white md:px-0">
+      <div class="container items-center max-w-6xl px-8 mx-auto xl:px-5">
+        <div class="flex flex-wrap items-center sm:-mx-3">
+          <div class="w-full md:w-1/2 md:px-3">
+            <div
+              class="w-full pb-6 space-y-6 sm:max-w-md lg:max-w-lg md:space-y-4 lg:space-y-8 xl:space-y-9 sm:pr-5 lg:pr-0 md:pb-0"
+            >
+              <h1
+                class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-4xl lg:text-5xl xl:text-6xl"
+              >
+                <span class="block xl:inline">Useful Tool to</span>
+                <span class="block text-indigo-600 xl:inline"
+                  >discover New Zealand Parliament Bills.</span
+                >
+              </h1>
+              <p
+                class="mx-auto text-base text-gray-500 sm:max-w-md lg:text-xl md:max-w-3xl"
+              >
+                It's never been easier to build beautiful websites that convey
+                your message and tell your story.
+              </p>
+              <div class="relative flex flex-col sm:flex-row sm:space-x-4">
+                <a
+                  href="{{ url_for('main.signup') }}"
+                  class="flex items-center w-full px-6 py-3 mb-3 text-lg text-white bg-indigo-600 rounded-md sm:mb-0 hover:bg-indigo-700 sm:w-auto"
+                >
+                  Try It Free
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-5 h-5 ml-1"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="w-full md:w-1/2">
+            <div
+              class="w-full h-auto overflow-hidden rounded-md shadow-xl sm:rounded-xl"
+            >
+              <img
+                src="https://images.unsplash.com/photo-1657673601193-b5da1c47bdc8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1050&q=80"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7 -->
+    <section class="bg-white">
+      <div
+        class="max-w-screen-xl px-4 py-12 mx-auto space-y-8 overflow-hidden sm:px-6 lg:px-8"
+      >
+        <p class="mt-8 text-base leading-6 text-center text-gray-400">
+          © 2023 NZBills, Group. All rights reserved.
+        </p>
+      </div>
+    </section>
+
+    <!-- <section class="hero is-primary is-fullheight ether-class">
+      {#
+      <img
+        src="{{ url_for('static',filename='ether_bg.jpg') }}"
+        alt="ether"
+        style="background-size: cover; top: 0; border: 0; right: 0; left: 0"
+      />#} {#
+      <img
+        src="{{ url_for('static',filename='ether_bg.jpg') }}"
+        alt="ether"
+        style="
+          position: absolute;
+          top: 0;
+          border: 0;
+          right: 0;
+          height: 100%;
+          width: 100%;
+          opacity: 0.5;
+          left: 0;
+        "
+      />#}
+      <div class="hero-head">
+        <nav class="navbar">
+          <div class="container">
+            <div id="navbarMenuHeroA" class="navbar-menu">
+              <div class="navbar-end">
+                <a href="{{ url_for('main.index') }}" class="navbar-item">
+                  Home
+                </a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.profile') }}" class="navbar-item">
+                  Retrieved Videos
+                </a>
+                {% endif %} {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('main.login') }}" class="navbar-item">
+                  Login
+                </a>
+                <a href="{{ url_for('main.signup') }}" class="navbar-item">
+                  Sign Up
+                </a>
+                {% endif %} {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.logout') }}" class="navbar-item">
+                  Logout
+                </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          {% block content %} {% endblock %}
+        </div>
+      </div>
+      <footer style="align-items: center; text-align: center; z-index: 2">
+        <p style="color: white !important">
+          Author: <a href="mailto:harsh96.nz@gmail.com">Harshavardhan</a>
+        </p>
+        <p style="color: white !important">
+          Copyright © 2023 NeedMoneyToBuyGPU. All rights reserved.
+        </p>
+      </footer>
+    </section> -->
+  </body>
 </html>
