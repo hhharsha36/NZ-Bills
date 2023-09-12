@@ -27,7 +27,8 @@ from app.bills.internal import get_last_session, YEAR_RANGE
 # }
 
 PM_DETAILS = get_pm_data()
-colour_discretion_map = {f"{d['name']} ({d['party']})": d['colour'] for d in PM_DETAILS}
+colour_discretion_map = {
+    f"{d['name']} ({d['party']})": d['colour'] for d in PM_DETAILS}
 colour_discretion_map['(?)'] = 'Purple'
 
 # TODO: review year start data, confirm that it is from year 2008
@@ -68,7 +69,8 @@ def read_pd_from_csv():
     # TODO: store and retrieve this data from DB
     for pm_details in PM_DETAILS:
         tmp_df.loc[
-            tmp_df['Last activity'] <= datetime.fromtimestamp(pm_details['term']), 'PM'
+            tmp_df['Last activity'] <= datetime.fromtimestamp(
+                pm_details['term']), 'PM'
         ] = f"{pm_details['name']} ({pm_details['party']})"
     # tmp_df.loc[tmp_df['Last activity'] <= datetime(2024, 1, 25), 'PM'] = 'Chris Hipkins (Labour Party)'
     # tmp_df.loc[tmp_df['Last activity'] <= datetime(2023, 1, 24), 'PM'] = 'Jacinda Ardern (Labour Party)'
@@ -76,22 +78,25 @@ def read_pd_from_csv():
     # tmp_df.loc[tmp_df['Last activity'] <= datetime(2016, 12, 12), 'PM'] = 'John Key (National Party)'
     # tmp_df.loc[tmp_df['Last activity'] <= datetime(2008, 11, 19), 'PM'] = 'Helen Clark (Labour Party)'
     tmp_df.drop('Select Committee', axis=1, inplace=True)
-    tmp_df.sort_values(by=['Last activity'], ascending=[True], na_position='first')
+    tmp_df.sort_values(by=['Last activity'], ascending=[
+                       True], na_position='first')
 
     global year_range
     year_range = tmp_df['year'].unique()
 
     tmp_timeperiod_df = tmp_df.copy()
     tmp_timeperiod_df['Committee_no_other'] = tmp_timeperiod_df['Committee']
-    tmp_timeperiod_df.loc[tmp_timeperiod_df["Committee_no_other"] == "Other", "Committee_no_other"] = np.NaN
-    # logging.debug(tmp_timeperiod_df.head())
+    tmp_timeperiod_df.loc[tmp_timeperiod_df["Committee_no_other"]
+                          == "Other", "Committee_no_other"] = np.NaN
+    print(tmp_timeperiod_df.head())
     tmp_timeperiod_non_other_df = tmp_df.copy()
     tmp_timeperiod_non_other_df.drop(
         tmp_timeperiod_non_other_df[tmp_timeperiod_non_other_df['Committee'] == 'Other'].index, inplace=True)
 
     tmp_category_df = tmp_df.copy()
     # logging.debug(tmp_category_df.head())
-    tmp_category_df.drop(tmp_category_df[tmp_category_df['Committee'] == 'Other'].index, inplace=True)
+    tmp_category_df.drop(
+        tmp_category_df[tmp_category_df['Committee'] == 'Other'].index, inplace=True)
     return tmp_df, tmp_timeperiod_df, tmp_timeperiod_non_other_df, tmp_category_df
 
 
@@ -132,7 +137,8 @@ def get_fig(source_data: pd.DataFrame, size: int):
 
     fig.update_layout(
         annotations=[
-            dict(text="Max. Depth", x=0, xref="paper", y=1.1, yref="paper", align="left", showarrow=False),
+            dict(text="Max. Depth", x=0, xref="paper", y=1.1,
+                 yref="paper", align="left", showarrow=False),
         ])
     return fig
 
@@ -204,7 +210,7 @@ def bills_register_dash_components(app):
     global df, timeperiod_df, timeperiod_non_other_df, category_df
     # number_of_refresh_clicks = 0
 
-    app.title = "Information Visualisation - Project"
+    app.title = "NZBills"
     app.layout = html.Div(children=[
         html.H1(
             children='New Zealand - Visualisation of Bills Passed Over the Years',
@@ -260,7 +266,8 @@ def bills_register_dash_components(app):
 
         dbc.Row([
             dbc.Col(html.Div([
-                html.P('Change Nested Chart Index By:', style={'font-family': 'Verdana'}, ),
+                html.P('Change Nested Chart Index By:',
+                       style={'font-family': 'Verdana'}, ),
                 dcc.Dropdown(
                     ['By Time', 'By Prime Minister', 'By Category Priority'],
                     # TODO: what is the below line for?
@@ -270,13 +277,15 @@ def bills_register_dash_components(app):
                     id='pie-order'
                 ),
             ],
-                style={'width': '20%', 'float': 'left', 'display': 'inline-block'}
+                style={'width': '20%', 'float': 'left',
+                       'display': 'inline-block'}
             ),
                 width={"order": 1}
             ),
 
             dbc.Col(html.Div([
-                html.P('''View 'Other' category Bills:''', style={'font-family': 'Verdana', "margin-bottom": "25px"}, ),
+                html.P('''View 'Other' category Bills:''', style={
+                       'font-family': 'Verdana', "margin-bottom": "25px"}, ),
                 dcc.RadioItems(
                     ['Yes', 'No'],
                     '''Show 'Other' Committee''',
@@ -293,92 +302,92 @@ def bills_register_dash_components(app):
 
             # dbc.Col(
             #     dbc.Row([
+            dbc.Col(
+                # html.Div([
+                dbc.Row([
                     dbc.Col(
-                        # html.Div([
-                        dbc.Row([
-                            dbc.Col(
-                                html.Div([
-                                    html.Button(
-                                        'Email Visualisation',
-                                        id='button-email-visualisation',
-                                        style={
-                                            "background-color": "#4CAF50",
-                                            "color": "white",
-                                            "border": "2px solid #4CAF50",
-                                            "border-radius": "2px",
-                                            "font-size": "16px",
-                                            "padding": "10px 24px",
-                                            "transition-duration": "0.4s",
-                                            ":hover": {
-                                                "background-color": "#4CAF50",
-                                                "color": "black",
-                                            },
-                                        }
-                                    ),
-                                    dbc.Alert(
-                                        children="Successfully Logged in!",
-                                        id="alert",
-                                        is_open=True,
-                                        duration=3000,
-                                        color="success"
-                                    ),
-                                ]),
-                                width={"order": 1}
+                        html.Div([
+                            html.Button(
+                                'Email Visualisation',
+                                id='button-email-visualisation',
+                                style={
+                                    "background-color": "#4CAF50",
+                                    "color": "white",
+                                    "border": "2px solid #4CAF50",
+                                    "border-radius": "2px",
+                                    "font-size": "16px",
+                                    "padding": "10px 24px",
+                                    "transition-duration": "0.4s",
+                                    ":hover": {
+                                        "background-color": "#4CAF50",
+                                        "color": "black",
+                                    },
+                                }
                             ),
-                            dbc.Col(
-                                html.Div([
-                                    html.Button(
-                                        'Reset Visualisation',
-                                        id='button-reset-visualisation',
-                                        style={
-                                            "background-color": "#008CBA",
-                                            "color": "white",
-                                            "border": "2px solid #008CBA",
-                                            "border-radius": "2px",
-                                            "font-size": "16px",
-                                            "padding": "10px 24px",
-                                            "transition-duration": "0.4s",
-                                            ":hover": {
-                                                "background-color": "#4CAF50",
-                                                "color": "black",
-                                            },
-                                        }
-                                    ),
-                                    # html.Div(id='reset-container-button', children=html.Br())
-                                ], style={
-                                    "margin-top": "10px"
-                                }),
-                                width={"order": 2}
-                            )
+                            dbc.Alert(
+                                children="Successfully Logged in!",
+                                id="alert",
+                                is_open=True,
+                                duration=3000,
+                                color="success"
+                            ),
                         ]),
-                    # ]),),
-                    #     dbc.Row([
-                    #         html.Div([
-                    #             html.Button(
-                    #                 'Reset Visualisation',
-                    #                 id='button-save-visualisation',
-                    #                 style={
-                    #                     "background-color": "#4CAF50",
-                    #                     "color": "white",
-                    #                     "border": "2px solid #4CAF50",
-                    #                     "border-radius": "2px",
-                    #                     "font-size": "16px",
-                    #                     "padding": "10px 24px",
-                    #                     "transition-duration": "0.4s",
-                    #                     ":hover": {
-                    #                         "background-color": "#4CAF50",
-                    #                         "color": "black",
-                    #                     },
-                    #                 }
-                    #             ),
-                    #             html.Div(id='save-container-button', children='')
-                    #         ], style={
-                    #             "margin-top": "10px"
-                    #         }),
-                    #     ]),
-                    # ],),
-                        width={"order": 3}
+                        width={"order": 1}
                     ),
+                    dbc.Col(
+                        html.Div([
+                            html.Button(
+                                'Reset Visualisation',
+                                id='button-reset-visualisation',
+                                style={
+                                    "background-color": "#008CBA",
+                                    "color": "white",
+                                    "border": "2px solid #008CBA",
+                                    "border-radius": "2px",
+                                    "font-size": "16px",
+                                    "padding": "10px 24px",
+                                    "transition-duration": "0.4s",
+                                    ":hover": {
+                                        "background-color": "#4CAF50",
+                                        "color": "black",
+                                    },
+                                }
+                            ),
+                            # html.Div(id='reset-container-button', children=html.Br())
+                        ], style={
+                            "margin-top": "10px"
+                        }),
+                        width={"order": 2}
+                    )
+                ]),
+                # ]),),
+                #     dbc.Row([
+                #         html.Div([
+                #             html.Button(
+                #                 'Reset Visualisation',
+                #                 id='button-save-visualisation',
+                #                 style={
+                #                     "background-color": "#4CAF50",
+                #                     "color": "white",
+                #                     "border": "2px solid #4CAF50",
+                #                     "border-radius": "2px",
+                #                     "font-size": "16px",
+                #                     "padding": "10px 24px",
+                #                     "transition-duration": "0.4s",
+                #                     ":hover": {
+                #                         "background-color": "#4CAF50",
+                #                         "color": "black",
+                #                     },
+                #                 }
+                #             ),
+                #             html.Div(id='save-container-button', children='')
+                #         ], style={
+                #             "margin-top": "10px"
+                #         }),
+                #     ]),
+                # ],),
+                width={"order": 3}
+            ),
             #     ])
             # ),
         ]),
@@ -415,19 +424,23 @@ def bills_register_dash_components(app):
         # ),
 
         html.Div([
-            html.P('''Use the below slider to filter year range:''', style={'font-family': 'Verdana'}, ),
+            html.P('''Use the below slider to filter year range:''',
+                   style={'font-family': 'Verdana'}, ),
             dcc.RangeSlider(min(year_range), max(year_range), step=1,
                             # marks=None,
                             marks={int(i): f'{int(i)}' for i in year_range},
                             value=[min(year_range), max(year_range)],
-                            tooltip={"placement": "bottom", "always_visible": True},
+                            tooltip={"placement": "bottom",
+                                     "always_visible": True},
                             allowCross=False,
                             id='year-range'),
         ],
-            style={"margin-top": "100px", 'width': '100%', 'font-family': 'Verdana'},
+            style={"margin-top": "100px", 'width': '100%',
+                   'font-family': 'Verdana'},
         ),
         html.Div([
-            html.P('''Use the below slider to modify the visualisation size:''', style={'font-family': 'Verdana'}, ),
+            html.P('''Use the below slider to modify the visualisation size:''', style={
+                   'font-family': 'Verdana'}, ),
             dcc.Slider(1000, 2500, step=100,
                        marks={int(i): f'{int(i)}' for i in SIZE_RANGE},
                        value=DEFAULT_VALUES['size_range'],
@@ -445,14 +458,9 @@ def bills_register_dash_components(app):
 
         dcc.Graph(
             id='NZ-bills-passed',
-            figure=get_fig(source_data=timeperiod_df, size=DEFAULT_VALUES['size_range']),
+            figure=get_fig(source_data=timeperiod_df,
+                           size=DEFAULT_VALUES['size_range']),
             style={"margin-top": "1px"},
-        ),
-
-        html.Div(
-            children='''This Visualisation was done by Harshavardhan as a project made for the Information Visualisation 
-            (COMPX532) paper handled by Professor Dr. Mark Apperley at the University of Waikato, Hamilton.''',
-            style={'font-family': 'Verdana'},
         ),
 
     ])
@@ -479,7 +487,8 @@ def bills_register_dash_components(app):
         # if n_clicks > number_of_refresh_clicks:
         #     df, timeperiod_df, timeperiod_non_other_df, category_df = read_pd_from_csv()
         #     number_of_refresh_clicks = n_clicks
-        logging.debug(f'{pie_order=}, {include_other=}, {time_period_range=}, {size_range=}')
+        logging.debug(
+            f'{pie_order=}, {include_other=}, {time_period_range=}, {size_range=}')
 
         # if not pie_order:
         #     pie_order = 'By Time'
@@ -499,13 +508,15 @@ def bills_register_dash_components(app):
             last_session = get_last_session(current_user.name)
             if last_session:
                 db_update = False
-                logging.info(f'restoring last session for user: {current_user.name}')
+                logging.info(
+                    f'restoring last session for user: {current_user.name}')
                 pie_order = last_session['pie_order']
                 include_other = last_session['include_other']
                 time_period_range = last_session['time_period_range']
                 size_range = last_session['size_range']
             else:
-                logging.info(f'last session same as current session for user: {current_user.name}; {last_session=}')
+                logging.info(
+                    f'last session same as current session for user: {current_user.name}; {last_session=}')
 
         if db_update:
             logging.info(f'performing db update for user: {current_user.name}')
@@ -527,7 +538,7 @@ def bills_register_dash_components(app):
         if isinstance(time_period_range, list) and len(time_period_range) == 2:
             include_other_opt = include_other_opt[
                 (include_other_opt['year'] >= min(time_period_range)) & (
-                        include_other_opt['year'] <= max(time_period_range))]
+                    include_other_opt['year'] <= max(time_period_range))]
 
             if pie_order == 'By Prime Minister':
                 return get_fig_pm(source_data=include_other_opt, size=size_range), pie_order, include_other, \
