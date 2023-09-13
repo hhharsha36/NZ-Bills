@@ -311,7 +311,7 @@ class UpdateData:
     def update(self):
         self.page_count = 0
         self.df = None
-        for page_count in range(1, 55):
+        for page_count in range(1, 55):  # TODO: address the bug to make the page scrapping dynamic
             req = self.get_data(page_count)
             webpage = urlopen(req).read()
             df_list = pd.read_html(webpage)[-1]

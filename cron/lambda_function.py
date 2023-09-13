@@ -2,18 +2,18 @@ import json
 import logging
 # from urllib import request, parse
 
-from package import requests
+import requests
 
 
 def lambda_handler(event, context):
     with open('./config.json') as f:
         config = json.load(f)
-        logging.debug(f'{config=}')
+        logging.debug(f'config: {config}')
 
     try:
         res = requests.post(config.get('url'), json={'key': config.get('key')}, timeout=3)
-        logging.debug(f'{res.status_code=}')
-        logging.debug(f'{res.json()=}')
+        logging.debug(f'res.status_code: {res.status_code}')
+        logging.debug(f'res.json(): {res.json()}')
         return res
     except requests.exceptions.ReadTimeout:
         pass
