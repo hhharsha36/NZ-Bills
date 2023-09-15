@@ -8,6 +8,7 @@ import dash_bootstrap_components as dbc
 from flask import render_template
 from flask_login import current_user
 import numpy as np
+import plotly as ply
 import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
@@ -555,11 +556,12 @@ def bills_register_dash_components(app):
         Output('alert', 'is_open'),
         Output('alert', 'color'),
         Input('button-email-visualisation', 'n_clicks'),
+        State('NZ-bills-passed', 'figure'),
         # State('email-input-box', 'value'),
         # State('alert', 'is_open'),
         # State('alert', 'is_open', 'color'),
     )
-    def email_fig(n_clicks):
+    def email_fig(n_clicks, fig):
         logging.debug(f'email called')
         if not n_clicks:
             return no_update
@@ -569,10 +571,16 @@ def bills_register_dash_components(app):
             children = 'not logged in'
             return children, is_open, color
 
-        if email_image(recipient=current_user, img_path=''):
+        fig = ply.graph_objects.Figure(fig)
+        img_bytes = fig.to_image('png')
+
+        if email_image(recipient=current_user, img_bytes=img_bytes):
+            logging.debug(f"successfully sent email to user: {current_user.get_id()}")
             children = f'successfully sent email on: {datetime.now()}'
             color = 'success'
             return children, is_open, color
+
+        logging.error(f"error sending email to user: {current_user.get_id()}")
         children = 'error sending email'
         return children, is_open, color
 

@@ -4,14 +4,17 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from email.mime.text import MIMEText
 import logging
+from smtplib import SMTP_SSL
 
 from config import BaseConfig
 
 
-STS_CLIENT = BaseConfig.STS_CLIENT
+SES_CLIENT = BaseConfig.SES_CLIENT
 EMAIL_CONTENT = BaseConfig.EMAIL_CONTENT
 USERS_TABLE = BaseConfig.USERS_TABLE
 M_USERS_COL = BaseConfig.M_USERS_COL
+SMTP_CONFIG = BaseConfig.SMTP_CONFIG
+DEBUG_MODE = BaseConfig.DEBUG_MODE
 
 
 SIZE_RANGE = range(1000, 2500, 100)
@@ -29,46 +32,77 @@ def get_pm_data():
     return sorted(response['Items'], key=lambda x: x.get('term'), reverse=True)
 
 
-def email_image(recipient, img_path):
+def email_image(recipient, img_bytes):
     # https://stackoverflow.com/questions/60430283/how-to-add-image-to-email-body-python
     # https://stackoverflow.com/questions/48587432/add-embedded-image-in-emails-in-aws-ses-service
-    dt = str(datetime.now().isoformat()).replace(' ', '')
+    dt = str(datetime.now().strftime('%Y-%m-%d %I:%M %p'))
     msg = MIMEMultipart('related')
     msg["From"] = EMAIL_CONTENT['From']
-    msg["To"] = recipient.lower()
-    msg["Subject"] = EMAIL_CONTENT['Subject'] + dt
+    msg["To"] = recipient.get_id().lower()
+    msg["Subject"] = EMAIL_CONTENT['Subject']
 
     html_output = f'''
-    <html>
-    <head></head>
+    <html lang="en">
     <body>
-    <h1>{EMAIL_CONTENT['H1']}</h1>
+    <p>{EMAIL_CONTENT['H1']}</p>
     <p>{EMAIL_CONTENT['Body']}</p>
+    <br>
+    <p>Regards,<br>NZ Bills Team<p>
     </body>
     </html>'''
     msg.attach(MIMEText(html_output, "html"))
 
-    with open(img_path, "rb") as fp:
-        img = MIMEImage(fp.read())
-    img.add_header("Content-ID", f"<NZ-Bills-{dt}>")
+    # with open(img_path, "rb") as fp:
+    #     img = MIMEImage(fp.read())
+    img = MIMEImage(img_bytes)
+    img.add_header('Content-ID', f'<NZ-Bills-{dt}>')
+    img.add_header('Content-Disposition', f'attachment; filename= NZBills-export-{dt}')
     msg.attach(img)
+    logging.debug(f'created email MIME content')
 
     try:
-        response = STS_CLIENT.send_raw_email(
-            Source=EMAIL_CONTENT['From'],
-            Destinations=[
-                recipient.lower()
-            ],
-            RawMessage={
-                'Data': msg.as_string(),
-            }
-        )
-    except ClientError as e:
-        logging.error(e)
-        return False
-    else:
-        logging.info(f'successfully sent email to: {recipient}; message id: {response["MessageId"]}')
+        logging.debug(f'calling smtp')
+        with SMTP_SSL(SMTP_CONFIG['Credentials']['Host'], SMTP_CONFIG['Credentials']['Port']) as conn:
+            logging.debug(f'smtp1')
+            conn.set_debuglevel(False)
+            logging.debug(f'smtp2')
+            conn.login(SMTP_CONFIG['Credentials']['Username'], SMTP_CONFIG['Credentials']['Password'])
+            logging.debug(f'smtp3')
+            conn.sendmail(SMTP_CONFIG['From'], recipient.get_id().lower(), msg.as_string())
+            logging.debug(f'smtp4')
         return True
+    except Exception as e:
+        logging.error(f"error sending email: {e}")
+        return False
+
+    # conn = SMTP_SSL(SMTP_CONFIG['Credentials']['Host'])
+    # try:
+    # finally:
+    #     conn.quit()
+
+    # try:
+    #     response = SES_CLIENT.send_email(
+    #         FromEmailAddress=EMAIL_CONTENT['From'],
+    #         Destination={
+    #             'ToAddresses': [
+    #                 recipient.get_id().lower()
+    #             ],
+    #             'BccAddresses': [
+    #                 EMAIL_CONTENT['From']
+    #             ],
+    #         },
+    #         Content={
+    #             'Raw': {
+    #                 'Data': msg.as_string(),
+    #             }
+    #         },
+    #     )
+    # except ClientError as e:
+    #     logging.error(e)
+    #     return False
+    # else:
+    #     logging.info(f'successfully sent email to: {recipient}; message id: {response["MessageId"]}')
+    #     return True
 
 
 def get_usr_from_db(username: str):

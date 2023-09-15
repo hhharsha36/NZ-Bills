@@ -8,17 +8,28 @@ DynamoDB:
   UsersTableName: "Users"
   NzPmTableName: "NzPm"
 
-STS:
+SES:
   Credentials:
   #    aws_access_key_id: "dfvdf"
   #    aws_secret_access_key: "DFvdfv"
     region_name: "ap-southeast-2"
   EmailContent:
     From: "NZ Bill Visualisation <into@compx527.s1.pkgsons.com>"
-    Subject: "Copy of visualisation Requested on: "
+    Subject: "Copy of NZ bills visualisation"
 #    BodyText: "Kia Ora,\n\nBelow is the requested visualisation image.\n"
     H1: "Kia Ora,"
     Body: "Below is the requested visualisation image."
+
+SMTP:
+  Credentials:
+    Host: "smtp.gmail.com"
+    Port: 465
+    Email: ""
+    Password: ""
+  From: ""
+  Subject: ""
+  H1: "Kia Ora,"
+  Body: "Below is the requested visualisation image."
 
 S3:
   Credentials:
