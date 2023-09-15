@@ -9,7 +9,7 @@ from smtplib import SMTP_SSL
 from config import BaseConfig
 
 
-SES_CLIENT = BaseConfig.SES_CLIENT
+# SES_CLIENT = BaseConfig.SES_CLIENT
 EMAIL_CONTENT = BaseConfig.EMAIL_CONTENT
 USERS_TABLE = BaseConfig.USERS_TABLE
 M_USERS_COL = BaseConfig.M_USERS_COL

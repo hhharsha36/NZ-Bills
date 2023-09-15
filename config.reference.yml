@@ -26,10 +26,11 @@ SMTP:
     Port: 465
     Email: ""
     Password: ""
-  From: ""
-  Subject: ""
-  H1: "Kia Ora,"
-  Body: "Below is the requested visualisation image."
+  EmailContent:
+    From: ""
+    Subject: ""
+    H1: "Kia Ora,"
+    Body: "Below is the requested visualisation image."
 
 S3:
   Credentials:
