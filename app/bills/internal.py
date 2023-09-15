@@ -68,7 +68,7 @@ def email_image(recipient, img_bytes):
             logging.debug(f'smtp2')
             conn.login(SMTP_CONFIG['Credentials']['Username'], SMTP_CONFIG['Credentials']['Password'])
             logging.debug(f'smtp3')
-            conn.sendmail(SMTP_CONFIG['From'], recipient.get_id().lower(), msg.as_string())
+            conn.sendmail(EMAIL_CONTENT['From'], recipient.get_id().lower(), msg.as_string())
             logging.debug(f'smtp4')
         return True
     except Exception as e:
