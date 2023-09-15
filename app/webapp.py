@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 from re import compile
+import threading
 from time import sleep
 import os
 
@@ -64,6 +65,23 @@ with open(forbidden_pwd_path) as file:
 #         logging.error(e)
 #         found_usr = None
 #     return found_usr
+
+
+def _refresh_df_call():
+    while True:
+        sleep(3_600)
+        try:
+            logging.warning(f'calling refresh_df function via Threading')
+            refresh_df()
+        except Exception as e:
+            logging.info(f'error in refresh_df() call: {e}')
+
+
+logging.info(f'initialising refresh_df Thread')
+refresh_df_thread = threading.Thread(target=_refresh_df_call, daemon=True)
+logging.info(f"starting refresh_df Thread")
+refresh_df_thread.start()
+logging.info(f"refresh_df Thread started")
 
 
 class SignUp:
@@ -309,12 +327,18 @@ class UpdateData:
     #     self.update()
 
     def update(self):
-        self.page_count = 0
         self.df = None
-        for page_count in range(1, 55):  # TODO: address the bug to make the page scrapping dynamic
+
+        attempt = page_count = 0
+        while attempt < 3 and page_count < 1_000:
+            page_count += 1
             req = self.get_data(page_count)
             webpage = urlopen(req).read()
             df_list = pd.read_html(webpage)[-1]
+
+            if not df_list and self.df is not None:
+                attempt += 1
+                continue
 
             if self.df is None:
                 self.df = df_list
@@ -323,10 +347,11 @@ class UpdateData:
             logging.debug(f"{page_count=}")
         self.save_csv()
         err = self.upload_to_s3()
+        self.page_count = page_count
         return err
 
     def get_data(self, page_no, attempt=0):
-        if attempt >= 10:
+        if attempt >= 5:
             return None
         try:
             return Request(
@@ -334,7 +359,7 @@ class UpdateData:
                 headers=self._req_headers)
         except URLError:
             attempt += 1
-            sleep(12)
+            sleep(12 * attempt)
             return self.get_data(page_no=page_no, attempt=attempt)
 
     def save_csv(self):

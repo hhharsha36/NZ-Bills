@@ -15,4 +15,4 @@ if BaseConfig.DEBUG_MODE:
 
 
 if __name__ == '__main__':
-    server.run(host='0.0.0.0', port=5001, debug=BaseConfig.DEBUG_MODE)
+    server.run(host='0.0.0.0', port=5001, debug=BaseConfig.DEBUG_MODE, use_reloader=False)
