@@ -55,6 +55,8 @@ with open(forbidden_pwd_path) as file:
     while line := file.readline():
         forbidden_usernames.append(line.rstrip())
 
+download_event = threading.Event()
+
 
 # def get_user_from_db(username: str):
 #     try:
@@ -336,7 +338,7 @@ class UpdateData:
             webpage = urlopen(req).read()
             df_list = pd.read_html(webpage)[-1]
 
-            if not df_list and self.df is not None:
+            if df_list.empty and self.df is not None:
                 attempt += 1
                 continue
 
@@ -388,17 +390,29 @@ def download_data():
         return jsonify({'error': True, 'status': '`key` missing in request'})
     elif req.get('key') != BaseConfig.DOWNLOAD_KEY:
         return jsonify({'error': True, 'status': 'wrong key'})
-    update_data_obj = UpdateData()
-    err = update_data_obj.update()
-    if err:
-        return jsonify({'error': True, 'status': err})
 
-    refresh_df()
+    if download_event.is_set():
+        return jsonify({'error': True, 'status': 'download trigger called previously'})
+
+    download_event.set()
+
+    try:
+        update_data_obj = UpdateData()
+        err = update_data_obj.update()
+        if err:
+            download_event.clear()
+            return jsonify({'error': True, 'status': err})
+        refresh_df()
+    except Exception as e:
+        logging.error(e)
+
     # try:
     #     BaseConfig.S3_CLIENT.download_file(BaseConfig.BUCKET_NAME, BaseConfig.S3_PATH, DOWNLOAD_PATH)
     # except ClientError as e:
     #     logging.error(e)
     #     return jsonify({'error': True, 'status': 'error downloading file'})
+    sleep(3_600)
+    download_event.clear()
     return jsonify({'error': False, 'status': 'success'})
 
 
