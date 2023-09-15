@@ -31,8 +31,8 @@ class BaseConfig:
     SECRET_KEY = 'Su93rS3cr3tF1@$kK3y'  # TODO: move to config file
     PEPPER_VAL = CONFIG_DATA.get('Pepper', 'None')
     DISABLE_SIGNUP = CONFIG_DATA.get('DisableSignUp', False)
-    SES_CLIENT = boto3.client('sesv2', **CONFIG_DATA['SES']['Credentials'])
-    EMAIL_CONTENT = CONFIG_DATA['SES']['EmailContent']
+    # SES_CLIENT = boto3.client('sesv2', **CONFIG_DATA['SES']['Credentials'])
+    EMAIL_CONTENT = CONFIG_DATA['SMTP']['EmailContent']
     SMTP_CONFIG = CONFIG_DATA['SMTP']
     S3_CLIENT = boto3.client('s3', **CONFIG_DATA['S3']['Credentials'])
     S3_RESOURCE = boto3.resource('s3', **CONFIG_DATA['S3']['Credentials'])
